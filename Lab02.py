@@ -1,6 +1,9 @@
-#Lab02
-#Kai Francis
-#Ryan Yonek
+# Authors: Kai Francis, Ryan Yonek
+# Date: 8/28/24
+# Unit Testing for Inheritance Class Method
+
+# Unit tests
+import unittest
 
 # Base class
 class Sport:
@@ -9,7 +12,7 @@ class Sport:
 
     def get_equipment(self):
         return "Generic sports equipment"
-
+    
 # Derived class
 class Basketball(Sport):
     def __init__(self, name, team_size):
@@ -19,8 +22,15 @@ class Basketball(Sport):
     def get_equipment(self):
         return "Basketball"
 
-# Unit tests
-import unittest
+    def team_size(self):
+        return "5 people"
+
+    def get_game_duration(self):
+        return "48 mintues" #standard NBA game length
+
+    def get_court_size(self):
+        return "94 feet long, 50 feet wide" #NBA court size
+
 
 class TestBasketball(unittest.TestCase):
 
@@ -32,4 +42,14 @@ class TestBasketball(unittest.TestCase):
         game = Basketball("Basketball", 5)
         self.assertEqual(game.team_size, 5)
 
+    def test_get_game_duration(self):
+        game = Basketball("Basketball", 5)
+        self.assertEqual(game.get_game_duration(), "48 minutes")
 
+    def test_get_court_size(self):
+        game = Basketball("Basketball", 5)
+        self.assertEqual(game.get_court_size(), "94 feet long, 50 feet wide")
+    
+    
+if __name__ == "__main__":
+    unittest.main()
