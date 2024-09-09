@@ -56,3 +56,42 @@ def shorten_url(long_url):
     url_data[short_id] = long_url
     save_url_data(url_data)
     return f"Shortened URL: {short_id}"
+
+# Retrieve the original URL from the shortened version
+def retrieve_url(short_id):
+    url_data = load_url_data()
+    return url_data.get(short_id, "Shortened URL not found.")
+
+# Count the number of shortened URLs
+def count_shortened_urls():
+    url_data = load_url_data()
+    return len(url_data)
+
+#User interaction loop
+def main():
+    while True:
+        print("\nURL Shortener Menu:")
+        print("1. Shorten URL")
+        print("2. Retrieve URL")
+        print("3. Count shortened URLs")
+        print("4. Exit")
+
+        choice = input("Enter choice number (1-4): ")
+
+        if choice == "1":
+            long_url = input("Enter URL to shorten: ")
+            print(shorten_url(long_url))
+        elif choice == "2":
+            short_id = input("Enter your shortened URL ID: ")
+            print(retrieve_url(short_id))
+        elif choice == "3":
+            print(f"Number of shortened URLs: {count_shortened_urls()}")
+        elif choice =="4":
+            print("Exiting program.")
+            break
+        else:
+            print("Invalid choice. Please choose a valid option between 1-4.")
+
+
+if __name__ == "__main__":
+    main()
