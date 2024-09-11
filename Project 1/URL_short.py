@@ -2,6 +2,7 @@ import random
 import string
 import json
 import re
+import pyshorteners
 
 #store data mappings
 URL_DATA_FILE = "url_data.json"
@@ -9,16 +10,16 @@ URL_DATA_FILE = "url_data.json"
 #load data from JSON file
 def load_url_data():
     try:
-        with open(URL_DATA_FILE, "r") as file: 
+        with open(URL_DATA_FILE, "r") as file:
             return json.load(file)
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
     
 
 #Save url data
-def save_url_data():
+def save_url_data(data):
     with open(URL_DATA_FILE, "w") as file:
-        json.dump(data, file)
+        json.dump(data, file, indent=4)
 
 #generate random ID
 def generate_random_id():
@@ -33,40 +34,44 @@ def validate_url(url):
     return re.match(url_pattern, url) is not None
 
 #shorten the URL
-def shorten_url(long_url):
+def shorten_url(long_url, data):
     if not validate_url(long_url):
         return "Invalid URL. Please enter a valid URL."
     
     #load URL data
-    url_data = load_url_data()
+    #data = load_url_data()
 
     #Check to see if the URL already exists
-    for short_id, stored_url in url_data.items():
+    for short_id, stored_url in data.items():
         if stored_url == long_url:
             return f"Shortened URL already exists: {short_id}"
 
     #generate new ID    
-    short_id = generate_short_id()
-    while short_id in url_data:
-        short_id = generate_short_id()
+    short_id = generate_random_id()
+    while short_id in data:
+        short_id = generate_random_id()
+
+    #use pyshorteners to make usable short URL
+    s = pyshorteners.Shortener()
+    short_url = s.tinyurl.short(long_url)
 
     # Store the new URL
-    url_data[short_id] = long_url
-    save_url_data(url_data)
-    return f"Shortened URL: {short_id}"
+    data[short_id] = short_url
+    save_url_data(data)
+    return f"Shortened URL: {short_url} (ID: {short_id})"
 
 # Retrieve the original URL from the shortened version
-def retrieve_url(short_id):
-    url_data = load_url_data()
-    return url_data.get(short_id, "Shortened URL not found.")
+def retrieve_url(short_id, data):
+    data = load_url_data()
+    return data.get(short_id, "Shortened URL not found.")
 
 # Count the number of shortened URLs
-def count_shortened_urls():
-    url_data = load_url_data()
-    return len(url_data)
+def count_shortened_urls(data):
+    return len(data)
 
 #User interaction loop
 def main():
+    data = load_url_data()
     while True:
         print("\nURL Shortener Menu:")
         print("1. Shorten a URL")
@@ -79,12 +84,12 @@ def main():
             
             if choice == '1':
                 long_url = input("Enter the URL to shorten: ").strip()
-                print(shorten_url(long_url))
+                print(shorten_url(long_url, data))
             elif choice == '2':
                 short_id = input("Enter the shortened URL ID: ").strip()
-                print(retrieve_url(short_id))
+                print(retrieve_url(short_id, data))
             elif choice == '3':
-                print(f"Total shortened URLs: {count_shortened_urls()}")
+                print(f"Total shortened URLs: {count_shortened_urls(data)}")
             elif choice == '4':
                 print("Goodbye!")
                 break
