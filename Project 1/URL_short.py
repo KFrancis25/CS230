@@ -16,7 +16,7 @@ def load_url_data():
         return {}
 
 
-
+#Initialize JSON data dictionary
 data = {}
 
 #Save url data
@@ -73,6 +73,7 @@ def retrieve_url(short_id, data):
 def count_shortened_urls(data):
     return len(data)
 
+# Delete a specified short URL and ID
 def delete_shortened_urls(data, short_id):
     data = load_url_data()
     del data[short_id]
