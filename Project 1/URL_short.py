@@ -10,15 +10,18 @@ URL_DATA_FILE = "url_data.json"
 #load data from JSON file
 def load_url_data():
     try:
-        with open(URL_DATA_FILE, "r") as file:
+        with open('url_data.json', 'r') as file:
             return json.load(file)
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
-    
+
+
+
+data = {}
 
 #Save url data
 def save_url_data(data):
-    with open(URL_DATA_FILE, "w") as file:
+    with open('url_data.json', 'w') as file:
         json.dump(data, file, indent=4)
 
 #generate random ID
@@ -39,7 +42,7 @@ def shorten_url(long_url, data):
         return "Invalid URL. Please enter a valid URL."
     
     #load URL data
-    #data = load_url_data()
+    data = load_url_data()
 
     #Check to see if the URL already exists
     for short_id, stored_url in data.items():
@@ -54,9 +57,10 @@ def shorten_url(long_url, data):
     #use pyshorteners to make usable short URL
     s = pyshorteners.Shortener()
     short_url = s.tinyurl.short(long_url)
-
+    
     # Store the new URL
     data[short_id] = short_url
+    print(data[short_id])
     save_url_data(data)
     return f"Shortened URL: {short_url} (ID: {short_id})"
 
@@ -69,6 +73,12 @@ def retrieve_url(short_id, data):
 def count_shortened_urls(data):
     return len(data)
 
+def delete_shortened_urls(data, short_id):
+    data = load_url_data()
+    del data[short_id]
+    save_url_data(data)
+
+
 #User interaction loop
 def main():
     data = load_url_data()
@@ -77,10 +87,12 @@ def main():
         print("1. Shorten a URL")
         print("2. Retrieve a URL")
         print("3. Count shortened URLs")
-        print("4. Exit")
+        print("4. Delete a URL")
+        print("5. Exit")
+        
 
         try:
-            choice = input("Enter your choice (1-4): ").strip()
+            choice = input("Enter your choice (1-5): ").strip()
             
             if choice == '1':
                 long_url = input("Enter the URL to shorten: ").strip()
@@ -91,16 +103,23 @@ def main():
             elif choice == '3':
                 print(f"Total shortened URLs: {count_shortened_urls(data)}")
             elif choice == '4':
+                short_id = input("Enter the shortened URL ID to be deleted: ").strip()
+                delete_shortened_urls(data, short_id)
+                data = load_url_data()
+                print("New data dictionary: ", data)
+            elif choice == '5':
                 print("Goodbye!")
                 break
             else:
-                print("Invalid choice. Please enter a number between 1 and 4.")
+                print("Invalid choice. Please enter a number between 1 and 5.")
         except EOFError:
             print("\nUnexpected end of input. Exiting...")
             break
         except KeyboardInterrupt:
             print("\nKeyboard interruption detected. Exiting...")
             break
+
+
 
 if __name__ == "__main__":
     main()
