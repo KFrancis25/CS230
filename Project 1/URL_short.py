@@ -1,13 +1,18 @@
+# CS 230 Project 1
+# Shortening URLs
+# Editors: Kai Francis, Ryan Yonek, Haylee Jackson
+# Last Modified: 9/16/24
+
 import random
 import string
 import json
 import re
 import pyshorteners
 
-#store data mappings
+# Store data mappings
 URL_DATA_FILE = "url_data.json"
 
-#load data from JSON file
+# Load data from JSON file
 def load_url_data():
     try:
         with open('url_data.json', 'r') as file:
@@ -16,19 +21,19 @@ def load_url_data():
         return {}
 
 
-#Initialize JSON data dictionary
+# Initialize JSON data dictionary
 data = {}
 
-#Save url data
+# Save url data
 def save_url_data(data):
     with open('url_data.json', 'w') as file:
         json.dump(data, file, indent=4)
 
-#generate random ID
+# Generate random ID
 def generate_random_id():
     return ''.join(random.choices(string.ascii_letters + string.digits, k=6))
 
-#Validate URL format
+# Validate URL format
 def validate_url(url):
     url_pattern = re.compile(
         r'^(?:http|ftp)s?://'  # http:// or https://
@@ -36,27 +41,27 @@ def validate_url(url):
         r'(?:[/?#][^\s]*)?$', re.IGNORECASE)
     return re.match(url_pattern, url) is not None
 
-#shorten the URL
+# Shorten the URL
 def shorten_url(long_url, data):
     if not validate_url(long_url):
         return "Invalid URL. Please enter a valid URL."
     
-    #load URL data
+    # Load URL data
     data = load_url_data()
 
-    #Check to see if the URL already exists
-    for short_id, stored_url in data.items():
-        if stored_url == long_url:
-            return f"Shortened URL already exists: {short_id}"
-
-    #generate new ID    
+    # Generate new ID    
     short_id = generate_random_id()
     while short_id in data:
         short_id = generate_random_id()
 
-    #use pyshorteners to make usable short URL
+    # Use pyshorteners module to make usable short URL
     s = pyshorteners.Shortener()
     short_url = s.tinyurl.short(long_url)
+
+    # Check to see if the new short URL already exists
+    for short_id, stored_url in data.items():
+        if stored_url == short_url:
+            return f"Shortened URL already exists: {short_id}"
     
     # Store the new URL
     data[short_id] = short_url
@@ -71,6 +76,7 @@ def retrieve_url(short_id, data):
 
 # Count the number of shortened URLs
 def count_shortened_urls(data):
+    data = load_url_data()
     return len(data)
 
 # Delete a specified short URL and ID
@@ -80,7 +86,7 @@ def delete_shortened_urls(data, short_id):
     save_url_data(data)
 
 
-#User interaction loop
+# User interaction loop
 def main():
     data = load_url_data()
     while True:
@@ -91,7 +97,7 @@ def main():
         print("4. Delete a URL")
         print("5. Exit")
         
-
+        
         try:
             choice = input("Enter your choice (1-5): ").strip()
             
