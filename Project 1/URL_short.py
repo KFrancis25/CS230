@@ -82,8 +82,14 @@ def count_shortened_urls(data):
 # Delete a specified short URL and ID
 def delete_shortened_urls(data, short_id):
     data = load_url_data()
-    del data[short_id]
-    save_url_data(data)
+    if (retrieve_url(short_id, data) == "Shortened URL not found."): 
+        print("Shortened URL not found.")
+        return 
+    else: 
+        del data[short_id]
+        save_url_data(data)
+        print("New data dictionary: ", data)
+    
 
 
 # User interaction loop
@@ -112,8 +118,6 @@ def main():
             elif choice == '4':
                 short_id = input("Enter the shortened URL ID to be deleted: ").strip()
                 delete_shortened_urls(data, short_id)
-                data = load_url_data()
-                print("New data dictionary: ", data)
             elif choice == '5':
                 print("Goodbye!")
                 break
@@ -125,8 +129,6 @@ def main():
         except KeyboardInterrupt:
             print("\nKeyboard interruption detected. Exiting...")
             break
-
-
 
 if __name__ == "__main__":
     main()
