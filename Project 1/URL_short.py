@@ -83,7 +83,7 @@ def count_shortened_urls(data):
 def delete_shortened_urls(data, short_id):
     data = load_url_data()
     if (retrieve_url(short_id, data) == "Shortened URL not found."): 
-        print("Shortened URL not found.")
+        print("Shortened URL ID not found.")
         return 
     else: 
         del data[short_id]
